@@ -10,7 +10,25 @@ static bool searchString(shiftTableT shifttable, string text);
 static void createAlphabet(shiftTableT shifttable);
 static void createShift(shiftTableT shifttable);
 
-bool horSpool(char * text, string pattern){
+int horSpool(char * text, string pattern){
+	shiftTableT shifttable;
+	bool match;
+	shifttable = initializeShiftTable(pattern);
+	match = searchString(shifttable, text);
+
+	if (match == TRUE){
+		//printf("*************HORSPOOL**************\n");
+		//printf("MATCH! Number of comparisons %d\n", shifttable->nComps);
+		return shifttable->nComps;
+	}
+	else{
+		//printf("*************HORSPOOL**************\n");
+		//printf("FAIL! Number of comparisons: %d\n", shifttable->nComps);
+		return shifttable->nComps;
+	}
+}
+
+void horSpoolSearch(char * text, string pattern){
 	shiftTableT shifttable;
 	bool match;
 	shifttable = initializeShiftTable(pattern);
@@ -19,12 +37,11 @@ bool horSpool(char * text, string pattern){
 	if (match == TRUE){
 		printf("*************HORSPOOL**************\n");
 		printf("MATCH! Number of comparisons %d\n", shifttable->nComps);
-		return match;
 	}
 	else{
 		printf("*************HORSPOOL**************\n");
 		printf("FAIL! Number of comparisons: %d\n", shifttable->nComps);
-		return match;
+		return shifttable->nComps;
 	}
 }
 

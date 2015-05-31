@@ -11,7 +11,8 @@ typedef struct{
 	int nComps;
 } *shiftTableT;
 
-bool horSpool(char * text, string pattern);
+int horSpool(char * text, string pattern);
+void horSpoolSearch(char * text, string pattern);
 shiftTableT initializeShiftTable(string ipattern);
 
 #endif

@@ -18,10 +18,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="main.c" />
+    <ClCompile Include="test.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="brutefroce.h" />
+    <ClInclude Include="bruteforce.h" />
     <ClInclude Include="horspool.h" />
+    <ClInclude Include="test.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5CD29622-5035-4F83-B9F1-C0A325B19796}</ProjectGuid>

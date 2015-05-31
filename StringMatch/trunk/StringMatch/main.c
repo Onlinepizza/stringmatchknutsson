@@ -7,90 +7,64 @@
 #include "strlib.h"
 #include "horspool.h"
 #include "genlib.h"
-#include "brutefroce.h"
+#include "bruteforce.h"
 #include "random.h"
 #include <string.h>
+#include "test.h"
 
 #define INITIAL_SIZE 500000
 
-string generatePattern(int patternLenght, char * text);
-int maxArr(int * frequenciesTemp, int size);
-shiftTableT Frequencies(char * text);
-void readFile(char * text);
+void searchMenu(char * textbuffer);
+string readFile(string filename);
 void expandArr(char * text, int * max);
 
+
 main(){
-	//string pattern;
-	char * textbuffer;
-	string pattern;
-	//bool match, match2;
-	textbuffer = NewArray(INITIAL_SIZE, char);
-	readFile(textbuffer);
-	/*printf("enter the pattern you want to search for\n");
-	pattern = GetLine();
-	match = horSpool(textbuffer, pattern);
-	match2 = bruteForce(textbuffer, pattern);
-	*/
-	pattern = generatePattern(5, textbuffer);
-	printf("%s", pattern);
-
-
+	int choice;
+	choice = 0;
+	string textbuffer = readFile("string.txt");
+	printf("press 1 for search, press 2 for test\n");
+	choice = GetInteger();
+	switch (choice)
+	{
+	case 1:
+		searchMenu(textbuffer);
+		break;
+	case 2:
+		testStringMatch(textbuffer);
+		break;
+	case 3:
+		ordOfGrowth(textbuffer);
+	default:
+		exit(0);
+	}
+	
 	getchar();
 }
 
+void searchMenu(char * textbuffer){
+	string pattern;
+	printf("Enter pattern\n");
+	pattern = GetLine();
+	
+	bruteForceSearch(textbuffer, pattern);
+	horSpoolSearch(textbuffer, pattern);
 
-
-string generatePattern(int patternLenght, char * text){
-	shiftTableT frequencies;
-	char * pattern;
-	int i;
-	int * frequenciesTemp;
-	frequencies = Frequencies(text);
-	pattern = NewArray(patternLenght + 1, char);
-	frequenciesTemp = NewArray(StringLength(frequencies->alphabet), int);
-	for (i = 0; i < StringLength(frequencies->alphabet); i++){
-		frequenciesTemp[i] = frequencies->shift[i];
-	}
-	for (i = 0; i < patternLenght; i++){
-		pattern[i] = frequencies->alphabet[maxArr(frequenciesTemp, StringLength(frequencies->alphabet))];
-	}
-	pattern[i] = '\0';
-	return pattern;
 }
 
-int maxArr(int * frequenciesTemp, int size ){
-	int i, max;
-	max = -1;
-	for (i = 0; i<size; i++){
-		if (frequenciesTemp[i]>max){
-			max = i;
-		}	
-	}
-	frequenciesTemp[max] = 0;
-	return(max);
-}
 
-shiftTableT Frequencies(char * text){
-	int i,j;
-	shiftTableT freq;
-	freq = initializeShiftTable("");
-	for (i = 0; i < StringLength(text); i++){
-		for (j = 0; j < StringLength(freq->alphabet); j++){
-			if (text[i] == freq->alphabet[j])
-				freq->shift[j]++;
-		}
-	}
-	return freq;
-}
 
-void readFile(char * text){
+
+string readFile(string filename){
+	char * text;
 	FILE *textfile;
 	char element;
 	int sentinel, i, currentmax;
+	text = NewArray(INITIAL_SIZE, char);
 	currentmax = INITIAL_SIZE;
 	i = -1;
 	sentinel = 0;
-	textfile = fopen("string.txt", "r");
+	textfile = fopen(filename, "r");
 	while (sentinel == 0){
 		if (i >= currentmax - 1){
 			expandArr(text, &currentmax);
@@ -107,21 +81,24 @@ void readFile(char * text){
 		}
 	}
 	fclose(textfile);
+	return text;
 }
 
 void expandArr(char * text, int * max){
-	char * temp;
 	int i, currentmax;
-	currentmax = max;
-	temp = NewArray(currentmax * 2, char);
+	char * temp;
+	currentmax = 0;
+	currentmax = *max;
+	currentmax = currentmax * 2;
+	temp = NewArray(currentmax, char);
 	for (i = 0; i < currentmax; i++){
 		temp[i] = text[i];
 	}
-	free(text);
-	text = NewArray(currentmax * 2, char);
-	for (i = 0; i < currentmax * 2; i++){
+	FreeBlock(text);
+	text = NewArray(currentmax, char);
+	for (i = 0; i < currentmax; i++){
 		text[i] = temp[i];
 	}
-	free(temp);
-	max = currentmax * 2;
+	FreeBlock(temp);
+	*max = currentmax;
 }
