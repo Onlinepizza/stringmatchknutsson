@@ -21,6 +21,7 @@ void expandArr(char * text, int * max);
 
 main(){
 	int choice;
+	growthT horspool, bruteforce;
 	choice = 0;
 	string textbuffer = readFile("string.txt");
 	printf("press 1 for search, press 2 for test\n");
@@ -34,7 +35,11 @@ main(){
 		testStringMatch(textbuffer);
 		break;
 	case 3:
-		ordOfGrowth(textbuffer);
+		horspool = initGrowth("horspool", 500);
+		bruteforce = initGrowth("bruteforce", 500);
+		ordOfGrowth(textbuffer, horspool, bruteforce);
+		createGrowthFile(horspool, bruteforce);
+		break;
 	default:
 		exit(0);
 	}

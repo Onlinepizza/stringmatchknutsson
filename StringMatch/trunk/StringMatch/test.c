@@ -120,40 +120,71 @@ string readFileTest(string filename, int inputSize){
 	while (i < inputSize){
 		element = getc(textfile);
 		text[i] = element;
+		i++;
 	}
 	text[i] = '\0';
 	fclose(textfile);
 	return text;
 }
 
-void ordOfGrowth(string text){
-	int i, size, newSize;
-	double div;
-	i = 0;
-	size = 0;
-	newSize = 0;
-	div = 1;
-	string pattern;
+growthT initGrowth(string algorithm, int size){
 	growthT growth;
 	growth = (growthT)GetBlock(sizeof * growth);
 	growth->type = "horspool";
-	growth->textLen = NewArray(100, int);
-	growth->nComps = NewArray(100, int);
+	growth->textLen = NewArray(size, int);
+	growth->nComps = NewArray(size, int);
+	growth->arrSize = size;
+	return growth;
+}
+
+void createGrowthFile(growthT horspool, growthT bruteforce){
+	int i, stop;
+	stop = horspool->arrSize;
+	FILE *outfile;
+	outfile = fopen("growth.txt", "w");
+	fprintf(outfile, "%s\n", horspool->type);
+	for (i = 0; i < stop; i++){
+		fprintf(outfile, "%s	", IntegerToString(horspool->textLen[i]));
+	}
+	fprintf(outfile,"\n ncomps\n");
+	for (i = 0; i < stop; i++){
+		fprintf(outfile, "%s	", IntegerToString(horspool->nComps[i]));
+	}
+	fprintf(outfile, "%s\n", bruteforce->type);
+	fprintf(outfile, "\n ncomps\n");
+	for (i = 0; i < stop; i++){
+		fprintf(outfile, "%s	", IntegerToString(bruteforce->nComps[i]));
+	}
+	fclose(outfile);
+	printf("File created");
+}
+
+void ordOfGrowth(string text, growthT horspool, growthT bruteforce){
+	int i, size, newSize, stop;
+	double div;
+	string newtext;
+	string pattern;
+	i = 10;
+	size = 0;
+	newSize = 0;
+	div = 1;
+	stop = (horspool->arrSize + 10);
+	//*****************************//
 	Randomize();
 	pattern = generatePattern(10, text);
 	size = StringLength(text);
 	newSize = size;
-	free(text);
-	while (i < 100){
+	while (i < stop){
 		//anrop till readFileTest
 		//sätt in text i horspool/bruteforce
-		growth->textLen[i] = newSize;
-		growth->nComps[i] = horSpool(readFileTest("string.txt", newSize), pattern);
-		div -= 0,01;
-		newSize *= div;
+		newtext = readFileTest("string.txt", i);
+		horspool->textLen[i-10] = i;
+		horspool->nComps[i-10] = horSpool(newtext, pattern);
+		bruteforce->textLen[i - 10] = i;
+		bruteforce->nComps[i-10] = bruteForce(newtext, pattern);
+		FreeBlock(newtext);
 		i++;
 	}
-
 }
 
 

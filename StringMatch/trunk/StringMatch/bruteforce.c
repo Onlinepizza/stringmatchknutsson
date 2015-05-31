@@ -50,7 +50,7 @@ bool searchString(string text, string pattern, int * nComparisons){
 	textlen = StringLength(text);
 	patlen = StringLength(pattern);
 	comparisons = 0;
-	for (i = 0; i < (textlen - patlen); i++){
+	for (i = 0; i <= (textlen - patlen); i++){
 		for (j = 0; j < patlen; j++){
 			if(pattern[j] != text[i + j]){
 				comparisons++;

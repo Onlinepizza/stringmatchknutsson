@@ -20,6 +20,7 @@ typedef struct{
 	string type;
 	int * textLen;
 	int * nComps;
+	int arrSize;
 } *growthT;
 
 string randomPattern(string pattern);
@@ -30,7 +31,9 @@ int minArr(int * frequenciesTemp, int size);
 shiftTableT Frequencies(char * text);
 int sumArr(int * arr, int size);
 string readFileTest(string filename, int inputSize);
-void ordOfGrowth(string text);
+void ordOfGrowth(string text, growthT horspool, growthT bruteforce);
 void testStringMatch(char * textbuffer);
+growthT initGrowth(string algorithm, int size);
+void createGrowthFile(growthT horspool, growthT bruteforce);
 
 #endif
