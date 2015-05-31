@@ -185,6 +185,7 @@ void ordOfGrowth(string text, growthT horspool, growthT bruteforce){
 		FreeBlock(newtext);
 		i++;
 	}
+	createGrowthFile(horspool, bruteforce);
 }
 
 

@@ -35,11 +35,11 @@ void bruteForceSearch(char * text, string pattern){
 	match = searchString(text, pattern, &nComparisons);
 	if (match == TRUE){
 		printf("***********************BRUTEFORCE****************************\n");
-		printf("The pattern was found in the text\n Number of comparisons: %d", nComparisons);
+		printf("MATCH! Number of comparisons: %d", nComparisons);
 	}
 	else{
 		printf("***********************BRUTEFORCE****************************\n");
-		printf("The pattern was NOT found in the text\n Number of comparisons: %d", nComparisons);
+		printf("FAIL! Number of comparisons: %d", nComparisons);
 	}
 
 	getchar();

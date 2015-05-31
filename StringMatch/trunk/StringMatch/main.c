@@ -38,7 +38,6 @@ main(){
 		horspool = initGrowth("horspool", 500);
 		bruteforce = initGrowth("bruteforce", 500);
 		ordOfGrowth(textbuffer, horspool, bruteforce);
-		createGrowthFile(horspool, bruteforce);
 		break;
 	default:
 		exit(0);
