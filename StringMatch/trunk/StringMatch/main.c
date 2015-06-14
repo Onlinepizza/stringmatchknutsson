@@ -12,7 +12,7 @@
 #include <string.h>
 #include "test.h"
 
-#define INITIAL_SIZE 500000
+#define INITIAL_SIZE 5000
 
 void searchMenu(char * textbuffer);
 string readFile(string filename);
@@ -21,10 +21,12 @@ void expandArr(char * text, int * max);
 
 main(){
 	int choice;
-	growthT horspool, bruteforce;
+	ordGrowthT horspool, bruteforce;
 	choice = 0;
 	string textbuffer = readFile("string.txt");
-	printf("press 1 for search, press 2 for test\n");
+	printf("************************************\n");
+	printf("Press 1 for search, press 2 for test with print to file\n");
+	printf("************************************\n");
 	choice = GetInteger();
 	switch (choice)
 	{
@@ -32,13 +34,10 @@ main(){
 		searchMenu(textbuffer);
 		break;
 	case 2:
-		testStringMatch(textbuffer);
-		break;
-	case 3:
-		horspool = initGrowth("horspool", 500);
-		bruteforce = initGrowth("bruteforce", 500);
+		horspool = initOrdGrowth("horspool", 3900);
+		bruteforce = initOrdGrowth("bruteforce", 3900);
 		ordOfGrowth(textbuffer, horspool, bruteforce);
-		break;
+		exit(0);
 	default:
 		exit(0);
 	}
@@ -50,7 +49,7 @@ void searchMenu(char * textbuffer){
 	string pattern;
 	printf("Enter pattern\n");
 	pattern = GetLine();
-	
+
 	bruteForceSearch(textbuffer, pattern);
 	horSpoolSearch(textbuffer, pattern);
 

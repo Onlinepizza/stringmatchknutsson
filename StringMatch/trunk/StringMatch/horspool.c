@@ -17,13 +17,9 @@ int horSpool(char * text, string pattern){
 	match = searchString(shifttable, text);
 
 	if (match == TRUE){
-		//printf("*************HORSPOOL**************\n");
-		//printf("MATCH! Number of comparisons %d\n", shifttable->nComps);
 		return shifttable->nComps;
 	}
 	else{
-		//printf("*************HORSPOOL**************\n");
-		//printf("FAIL! Number of comparisons: %d\n", shifttable->nComps);
 		return shifttable->nComps;
 	}
 }
@@ -41,7 +37,6 @@ void horSpoolSearch(char * text, string pattern){
 	else{
 		printf("*************HORSPOOL**************\n");
 		printf("FAIL! Number of comparisons: %d\n", shifttable->nComps);
-		return shifttable->nComps;
 	}
 }
 

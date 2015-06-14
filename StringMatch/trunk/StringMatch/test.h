@@ -5,7 +5,7 @@
 #include "genlib.h"
 #include "horspool.h"
 
-#define INITIAL_SIZE 500000
+#define INITIAL_SIZE 5000
 
 typedef struct{
 	int fivepat[50];
@@ -17,11 +17,20 @@ typedef struct{
 } *resultT;
 
 typedef struct{
-	string type;
-	int * textLen;
 	int * nComps;
-	int arrSize;
 } *growthT;
+
+typedef struct{
+	string algorithm;
+	growthT five;
+	growthT ten;
+	growthT twenty;
+	growthT lowfive;
+	growthT lowten;
+	growthT lowtwenty;
+	int arrSize;
+	int * textLen;
+} *ordGrowthT;
 
 string randomPattern(string pattern);
 string generatePattern(int patternLenght, char * text);
@@ -31,9 +40,10 @@ int minArr(int * frequenciesTemp, int size);
 shiftTableT Frequencies(char * text);
 int sumArr(int * arr, int size);
 string readFileTest(string filename, int inputSize);
-void ordOfGrowth(string text, growthT horspool, growthT bruteforce);
-void testStringMatch(char * textbuffer);
-growthT initGrowth(string algorithm, int size);
-void createGrowthFile(growthT horspool, growthT bruteforce);
+void ordOfGrowth(string text, ordGrowthT horspool, ordGrowthT bruteforce);
+void testStringMatch(char * textbuffer, char * newtext, ordGrowthT horspool, ordGrowthT bruteforce, int index);
+ordGrowthT initOrdGrowth(string algorithm, int size);
+growthT initGrowth(int size);
+void createGrowthFile(ordGrowthT algorithm);
 
 #endif

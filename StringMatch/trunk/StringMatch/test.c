@@ -77,9 +77,9 @@ int maxArr(int * frequenciesTemp, int size ){
 
 int minArr(int * frequenciesTemp, int size ){
 	int i, min;
-	min = 10000000000000;
+	min = 1000000;
 	for (i = 0; i<size; i++){
-		if (frequenciesTemp[i]<=min && frequenciesTemp[i] > 0){
+		if (frequenciesTemp[i] < min && frequenciesTemp[i] > 0){
 			min = i;
 		}	
 	}
@@ -127,186 +127,268 @@ string readFileTest(string filename, int inputSize){
 	return text;
 }
 
-growthT initGrowth(string algorithm, int size){
+ordGrowthT initOrdGrowth(string algorithm, int size){
+	ordGrowthT Ogrowth;
+	int arr;
+	arr = size / 50;
+	Ogrowth = (ordGrowthT)GetBlock(sizeof * Ogrowth);
+	Ogrowth->algorithm = algorithm;
+	Ogrowth->five = initGrowth(arr);
+	Ogrowth->ten = initGrowth(arr);
+	Ogrowth->twenty = initGrowth(arr);
+	Ogrowth->lowfive = initGrowth(arr);
+	Ogrowth->lowten = initGrowth(arr);
+	Ogrowth->lowtwenty = initGrowth(arr);
+	Ogrowth->arrSize = size;
+	Ogrowth->textLen = NewArray(size, int);
+
+	return Ogrowth;
+}
+
+growthT initGrowth(int size){
 	growthT growth;
 	growth = (growthT)GetBlock(sizeof * growth);
-	growth->type = "horspool";
-	growth->textLen = NewArray(size, int);
 	growth->nComps = NewArray(size, int);
-	growth->arrSize = size;
 	return growth;
 }
 
-void createGrowthFile(growthT horspool, growthT bruteforce){
+void createGrowthFile(ordGrowthT algorithm){
 	int i, stop;
-	stop = horspool->arrSize;
+	stop = (algorithm->arrSize/50);
 	FILE *outfile;
-	outfile = fopen("growth.txt", "w");
-	fprintf(outfile, "%s\n", horspool->type);
+	string file;
+	file = Concat(algorithm->algorithm, ".txt");
+	outfile = fopen(file, "w");
+	fprintf(outfile, "%s\n", algorithm->algorithm);
+	//spara de vanliga mönstren
+	//5
+	fprintf(outfile, "\ncommon 5pattern textlen\n");
 	for (i = 0; i < stop; i++){
-		fprintf(outfile, "%s	", IntegerToString(horspool->textLen[i]));
+		fprintf(outfile, "%s	", IntegerToString(algorithm->textLen[i]));
 	}
-	fprintf(outfile,"\n ncomps\n");
+	fprintf(outfile,"\ncommon 5pattern ncomps\n");
 	for (i = 0; i < stop; i++){
-		fprintf(outfile, "%s	", IntegerToString(horspool->nComps[i]));
+		fprintf(outfile, "%s	", IntegerToString(algorithm->five->nComps[i]));
 	}
-	fprintf(outfile, "%s\n", bruteforce->type);
-	fprintf(outfile, "\n ncomps\n");
+
+	fprintf(outfile, "\ncommon 10pattern ncomps\n");
 	for (i = 0; i < stop; i++){
-		fprintf(outfile, "%s	", IntegerToString(bruteforce->nComps[i]));
+		fprintf(outfile, "%s	", IntegerToString(algorithm->ten->nComps[i]));
 	}
+	
+	fprintf(outfile, "\ncommon 20pattern ncomps\n");
+	for (i = 0; i < stop; i++){
+		fprintf(outfile, "%s	", IntegerToString(algorithm->twenty->nComps[i]));
+	}
+
+	//spara de ovanliga mönstren
+
+	//5
+	
+	fprintf(outfile, "\nUNncommon 5pattern ncomps\n");
+	for (i = 0; i < stop; i++){
+		fprintf(outfile, "%s	", IntegerToString(algorithm->lowfive->nComps[i]));
+	}
+	//10
+
+	fprintf(outfile, "\nUNcommon 10pattern ncomps\n");
+	for (i = 0; i < stop; i++){
+		fprintf(outfile, "%s	", IntegerToString(algorithm->lowten->nComps[i]));
+	}
+	//20
+	
+	fprintf(outfile, "\nUNcommon 20pattern ncomps\n");
+	for (i = 0; i < stop; i++){
+		fprintf(outfile, "%s	", IntegerToString(algorithm->lowtwenty->nComps[i]));
+	}
+
 	fclose(outfile);
 	printf("File created");
 }
 
-void ordOfGrowth(string text, growthT horspool, growthT bruteforce){
-	int i, size, newSize, stop;
+
+void ordOfGrowth(string text, ordGrowthT horspool, ordGrowthT bruteforce){
+	int i, j, size, newSize, stop, pat;
 	double div;
 	string newtext;
-	string pattern;
-	i = 10;
+	pat = 20;
+	i = pat;
+	j = 0;
 	size = 0;
 	newSize = 0;
 	div = 1;
-	stop = (horspool->arrSize + 10);
-	//*****************************//
+	stop = (horspool->arrSize + pat);
+
 	Randomize();
-	pattern = generatePattern(10, text);
 	size = StringLength(text);
 	newSize = size;
 	while (i < stop){
-		//anrop till readFileTest
-		//sätt in text i horspool/bruteforce
+		printf("%d\n", i);
 		newtext = readFileTest("string.txt", i);
-		horspool->textLen[i-10] = i;
-		horspool->nComps[i-10] = horSpool(newtext, pattern);
-		bruteforce->textLen[i - 10] = i;
-		bruteforce->nComps[i-10] = bruteForce(newtext, pattern);
+		//markera längd på text
+		
+		horspool->textLen[j] = i;
+		
+
+		//markera längd på text
+		bruteforce->textLen[j] = i;
+		
+
+		//räkna ut antal jämförelser
+		testStringMatch(text, newtext, horspool, bruteforce, j);
 		FreeBlock(newtext);
-		i++;
+		j++;
+		i = (i + 50);
 	}
-	createGrowthFile(horspool, bruteforce);
+	createGrowthFile(horspool);
+	createGrowthFile(bruteforce);
 }
 
 
 
-void testStringMatch(char * textbuffer){
-	int i;
+
+void testStringMatch(char * textbuffer, char * newtext, ordGrowthT horspool, ordGrowthT bruteforce, int index){
+	int i, hFive, hTen, hTwenty, lFive, lTen, lTwenty;
 	string pattern;
 	resultT result;
 	result = (resultT)GetBlock(sizeof * result);
 
 	/****EXPERIMENT************/
 	/**********HIGH************/
-
-	Randomize();
+	/*
 	printf("**********************************************************\n");
 	printf("HORSPOOL\n\n");
 	printf("Patterns consisting of the 5, 10 and 20 most common letters\nin the text will be generated\neach will be shuffled and retried 50 times.\n");
-	getchar();
-
+	*/
 	pattern = generatePattern(5, textbuffer);
 	for (i = 0; i < 50; i++){
-		result->fivepat[i] = horSpool(textbuffer, randomPattern(pattern));
+		result->fivepat[i] = horSpool(newtext, randomPattern(pattern));
 	}
 
 	pattern = generatePattern(10, textbuffer);
 	for (i = 0; i < 50; i++){
-		result->tenpat[i] = horSpool(textbuffer, randomPattern(pattern));
+		result->tenpat[i] = horSpool(newtext, randomPattern(pattern));
 	}
 
 	pattern = generatePattern(20, textbuffer);
 	for (i = 0; i < 50; i++){
-		result->twentypat[i] = horSpool(textbuffer, randomPattern(pattern));
+		result->twentypat[i] = horSpool(newtext, randomPattern(pattern));
 	}
 
 	/********LOW*********/
 
-	printf("Patterns consisting of the 5, 10 and 20 LEAST common letters\nin the text will be generated\neach will be shuffled and retried 50 times.\n");
-	getchar();
+	//printf("Patterns consisting of the 5, 10 and 20 LEAST common letters\nin the text will be generated\neach will be shuffled and retried 50 times.\n");
 
 	pattern = generateLowPattern(5, textbuffer);
 	for (i = 0; i < 50; i++){
-		result->lowfivepat[i] = horSpool(textbuffer, randomPattern(pattern));
+		result->lowfivepat[i] = horSpool(newtext, randomPattern(pattern));
 	}
 
 	pattern = generateLowPattern(10, textbuffer);
 	for (i = 0; i < 50; i++){
-		result->lowtenpat[i] = horSpool(textbuffer, randomPattern(pattern));
+		result->lowtenpat[i] = horSpool(newtext, randomPattern(pattern));
 	}
 
 	pattern = generateLowPattern(20, textbuffer);
 	for (i = 0; i < 50; i++){
-		result->lowtwentypat[i] = horSpool(textbuffer, randomPattern(pattern));
+		result->lowtwentypat[i] = horSpool(newtext, randomPattern(pattern));
 	}
 
-	printf("MOST COMMON LETTERS\n");
-	printf("5 letters: %d\n", (sumArr(result->fivepat, 50) / 50));
-	printf("10 letters: %d\n", (sumArr(result->tenpat, 50) / 50));
-	printf("20 letters: %d\n", (sumArr(result->twentypat, 50) / 50));
+	//printf("MOST COMMON LETTERS\n");
+	hFive = (sumArr(result->fivepat, 50) / 50);
+	hTen = (sumArr(result->tenpat, 50) / 50);
+	hTwenty = (sumArr(result->twentypat, 50) / 50);
+	/*
+	printf("5 letters: %d\n", hFive);
+	printf("10 letters: %d\n", hTen);
+	printf("20 letters: %d\n", hTwenty);
+	*/
+	horspool->five->nComps[index] = hFive;
+	horspool->ten->nComps[index] = hTen;
+	horspool->twenty->nComps[index] = hTwenty;
 
-	printf("LEAST COMMON LETTERS\n");
-	printf("5 letters: %d\n", (sumArr(result->lowfivepat, 50) / 50));
-	printf("10 letters: %d\n", (sumArr(result->lowtenpat, 50) / 50));
-	printf("20 letters: %d\n", (sumArr(result->lowtwentypat, 50) / 50));
-	printf("**********************************************************\n\n");
-	getchar();
+	//printf("LEAST COMMON LETTERS\n");
+	lFive = (sumArr(result->lowfivepat, 50) / 50);
+	lTen = (sumArr(result->lowtenpat, 50) / 50);
+	lTwenty = (sumArr(result->lowtwentypat, 50) / 50);
+	/*
+	printf("5 letters: %d\n", lFive);
+	printf("10 letters: %d\n", lTen);
+	printf("20 letters: %d\n", lTwenty);
+	*/
+	horspool->lowfive->nComps[index] = lFive;
+	horspool->lowten->nComps[index] = lTen;
+	horspool->lowtwenty->nComps[index] = lTwenty;
+
+	//printf("**********************************************************\n\n");
+	
 
 
 	/****EXPERIMENT************/
 	/**********HIGH************/
-
+	/*
 	printf("**********************************************************\n");
 	printf("BRUTEFORCE\n");
 	printf("Patterns consisting of the 5, 10 and 20 most common letters\nin the text will be generated\neach will be shuffled and retried 50 times.\n");
-	getchar();
-
+	*/
 	pattern = generatePattern(5, textbuffer);
 	for (i = 0; i < 50; i++){
-		result->fivepat[i] = bruteForce(textbuffer, randomPattern(pattern));
+		result->fivepat[i] = bruteForce(newtext, randomPattern(pattern));
 	}
 
 	pattern = generatePattern(10, textbuffer);
 	for (i = 0; i < 50; i++){
-		result->tenpat[i] = bruteForce(textbuffer, randomPattern(pattern));
+		result->tenpat[i] = bruteForce(newtext, randomPattern(pattern));
 	}
 
 	pattern = generatePattern(20, textbuffer);
 	for (i = 0; i < 50; i++){
-		result->twentypat[i] = bruteForce(textbuffer, randomPattern(pattern));
+		result->twentypat[i] = bruteForce(newtext, randomPattern(pattern));
 	}
 
 	/********LOW*********/
 
-	printf("Patterns consisting of the 5, 10 and 20 LEAST common letters\nin the text will be generated\neach will be shuffled and retried 50 times.\n");
-	getchar();
+	//printf("Patterns consisting of the 5, 10 and 20 LEAST common letters\nin the text will be generated\neach will be shuffled and retried 50 times.\n");
 
 	pattern = generateLowPattern(5, textbuffer);
 	for (i = 0; i < 50; i++){
-		result->lowfivepat[i] = bruteForce(textbuffer, randomPattern(pattern));
+		result->lowfivepat[i] = bruteForce(newtext, randomPattern(pattern));
 	}
 
 	pattern = generateLowPattern(10, textbuffer);
 	for (i = 0; i < 50; i++){
-		result->lowtenpat[i] = bruteForce(textbuffer, randomPattern(pattern));
+		result->lowtenpat[i] = bruteForce(newtext, randomPattern(pattern));
 	}
 
 	pattern = generateLowPattern(20, textbuffer);
 	for (i = 0; i < 50; i++){
-		result->lowtwentypat[i] = bruteForce(textbuffer, randomPattern(pattern));
+		result->lowtwentypat[i] = bruteForce(newtext, randomPattern(pattern));
 	}
 
-	printf("MOST COMMON LETTERS\n");
-	printf("5 letters: %d\n", (sumArr(result->fivepat, 50) / 50));
-	printf("10 letters: %d\n", (sumArr(result->tenpat, 50) / 50));
-	printf("20 letters: %d\n", (sumArr(result->twentypat, 50) / 50));
+	//printf("MOST COMMON LETTERS\n");
+	hFive = (sumArr(result->fivepat, 50) / 50);
+	hTen = (sumArr(result->tenpat, 50) / 50);
+	hTwenty = (sumArr(result->twentypat, 50) / 50);
+	/*
+	printf("5 letters: %d\n", hFive);
+	printf("10 letters: %d\n", hTen);
+	printf("20 letters: %d\n", hTwenty);
+	*/
+	bruteforce->five->nComps[index] = hFive;
+	bruteforce->ten->nComps[index] = hTen;
+	bruteforce->twenty->nComps[index] = hTwenty;
 
-	printf("LEAST COMMON LETTERS\n");
-	printf("5 letters: %d\n", (sumArr(result->lowfivepat, 50) / 50));
-	printf("10 letters: %d\n", (sumArr(result->lowtenpat, 50) / 50));
-	printf("20 letters: %d\n", (sumArr(result->lowtwentypat, 50) / 50));
-	printf("**********************************************************\n");
+	//printf("LEAST COMMON LETTERS\n");
+	lFive = (sumArr(result->lowfivepat, 50) / 50);
+	lTen = (sumArr(result->lowtenpat, 50) / 50);
+	lTwenty = (sumArr(result->lowtwentypat, 50) / 50);
+	/*
+	printf("5 letters: %d\n", lFive);
+	printf("10 letters: %d\n", lTen);
+	printf("20 letters: %d\n", lTwenty);
+	*/
+	bruteforce->lowfive->nComps[index] = lFive;
+	bruteforce->lowten->nComps[index] = lTen;
+	bruteforce->lowtwenty->nComps[index] = lTwenty;
 
-	//printf("%s", textbuffer);
-	getchar();
 }

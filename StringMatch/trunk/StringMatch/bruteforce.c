@@ -15,13 +15,9 @@ int bruteForce(char * text, string pattern){
 	nComparisons = 0;
 	match = searchString(text, pattern, &nComparisons);
 	if (match == TRUE){
-		//printf("***********************BRUTEFORCE****************************\n");
-		//printf("The pattern was found in the text\n Number of comparisons: %d", nComparisons);
 		return nComparisons;
 	}
 	else{
-		//printf("***********************BRUTEFORCE****************************\n");
-		//printf("The pattern was NOT found in the text\n Number of comparisons: %d", nComparisons);
 		return nComparisons;
 	}
 
